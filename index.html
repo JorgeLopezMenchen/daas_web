@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kinematic DaaS | Filtros de Régimen para Algoritmos</title>
+    <title>Kinematic DaaS | Filtros de Régimen 4D</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,18 +11,18 @@
         <div class="logo">Kinematic<span>DaaS</span></div>
         <div class="links">
             <a href="#features">Tecnología</a>
-            <a href="http://35.196.208.134:8000/docs" target="_blank">API Docs</a>
-            <a href="mailto:jlopezmenchen06@gmail.com?subject=Solicitud%20de%20acceso%20-%20Kinematic%20DaaS" class="btn-primary">Solicitar Acceso</a>
+            <a href="#pricing">Planes Institucionales</a>
+            <a href="http://35.196.208.134:8000/docs" target="_blank" class="btn-primary" style="background: transparent; border: 1px solid #00ffcc; color: #00ffcc;">API Docs</a>
         </div>
     </nav>
 
     <header class="hero">
         <div class="hero-content">
             <h1>Motor DaaS B2B Operativo.</h1>
-            <p>Calculamos la velocidad, aceleración y el régimen del mercado en milisegundos mediante Filtros de Kalman 3D. Conéctate a nuestro feed B2B y opera con la matemática aeroespacial de tu lado.</p>
+            <p>Calculamos la velocidad, aceleración y el <span style="color: #00ffcc; font-weight: bold;">Jerk</span> del mercado en milisegundos mediante Filtros de Kalman 4D. Conéctate a nuestro feed institucional y opera con la matemática aeroespacial de tu lado.</p>
             <div class="cta-group">
-                <a href="http://35.196.208.134:8000/docs" class="btn-primary" target="_blank">Ver Documentación</a>
-                <a href="http://35.196.208.134:8000/docs" class="btn-secondary" target="_blank">Probar Endpoints en Vivo</a>
+                <a href="http://35.196.208.134:8000/docs" class="btn-primary" target="_blank">Probar Endpoints en Vivo</a>
+                <a href="#pricing" class="btn-secondary">Ver Planes de Acceso</a>
             </div>
         </div>
         <div class="hero-code">
@@ -30,16 +30,22 @@
                 <span class="dot red"></span>
                 <span class="dot yellow"></span>
                 <span class="dot green"></span>
-                <span class="title">GET /api/v1/market/ticker/NVDA</span>
+                <span class="title">GET /api/v1/market/state</span>
             </div>
             <pre><code>{
-  "status": "ok",
-  "ticker": "NVDA",
-  "data": {
-    "precio": 225.37,
-    "velocidad": 0.171,
-    "aceleracion": -0.079,
-    "regimen": "🟢 CRUCERO"
+  "QQQ": {
+    "precio": 731.00,
+    "velocidad": -0.277,
+    "aceleracion": -0.117,
+    "jerk": -0.02914,
+    "regimen": "🚨 COLAPSO"
+  },
+  "TSLA": {
+    "precio": 218.42,
+    "velocidad": 0.084,
+    "aceleracion": -0.012,
+    "jerk": -0.00511,
+    "regimen": "⚠️ FRENADA BRUSCA"
   }
 }</code></pre>
         </div>
@@ -47,16 +53,53 @@
 
     <section id="features" class="features">
         <div class="feature-card">
-            <h3>Filtro de Kalman 3D</h3>
-            <p>Aislamos el ruido del mercado utilizando modelos de movimiento de Newton para extraer la verdadera tendencia direccional.</p>
+            <h3>Filtro de Kalman 4D</h3>
+            <p>Aislamos el ruido del exchange. Extraemos la derivada superior (Jerk) para anticipar roturas estructurales antes de que el precio gire.</p>
         </div>
         <div class="feature-card">
             <h3>Latencia Sub-segundo</h3>
-            <p>Infraestructura asíncrona desplegada en Google Cloud. Procesamos el order flow en tiempo O(1) directo a tu servidor.</p>
+            <p>Infraestructura asíncrona (O(1)) desplegada en Google Cloud. Ingesta paralela para toda la cesta institucional.</p>
         </div>
         <div class="feature-card">
             <h3>Detección Temprana</h3>
-            <p>Identifica la pérdida de aceleración direccional antes de que el precio colapse y anticípate a los indicadores tradicionales.</p>
+            <p>El régimen matemático te avisa milisegundos antes de que los indicadores tradicionales (RSI, MACD) reaccionen.</p>
+        </div>
+    </section>
+
+    <!-- Sección de Pricing -->
+    <section id="pricing" style="padding: 5rem 2rem; text-align: center; border-top: 1px solid #222;">
+        <h2 style="color: white; margin-bottom: 1rem; font-size: 2.5rem;">Licencias de Datos</h2>
+        <p style="color: #888; margin-bottom: 3rem; max-width: 600px; margin-left: auto; margin-right: auto;">Integración directa para desarrolladores y firmas cuantitativas.</p>
+        
+        <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
+            <!-- Plan Developer -->
+            <div style="background: #111; padding: 2.5rem; border-radius: 12px; border: 1px solid #333; width: 320px; text-align: left;">
+                <h3 style="color: white; font-size: 1.5rem;">Sandbox API</h3>
+                <p style="color: #888; margin: 1rem 0;">Para evaluación y backtesting local.</p>
+                <h2 style="color: white; font-size: 2.5rem; margin: 1.5rem 0;">$0<span style="font-size: 1rem; color: #555;"> / mes</span></h2>
+                <ul style="color: #aaa; line-height: 2; margin-bottom: 2.5rem; list-style: none; padding: 0;">
+                    <li>✓ Endpoint REST público</li>
+                    <li>✓ Cesta (7 Tickers Institucionales)</li>
+                    <li>✓ Límite de 60 request/minuto</li>
+                    <li>✗ Conexión WebSocket</li>
+                </ul>
+                <a href="http://35.196.208.134:8000/docs" target="_blank" style="display: block; text-align: center; padding: 12px; background: #222; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; border: 1px solid #444;">Acceder al Swagger</a>
+            </div>
+
+            <!-- Plan Quant -->
+            <div style="background: rgba(0, 255, 204, 0.05); padding: 2.5rem; border-radius: 12px; border: 1px solid #00ffcc; width: 320px; text-align: left; position: relative;">
+                <span style="position: absolute; top: -12px; right: 24px; background: #00ffcc; color: black; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold;">RECOMENDADO</span>
+                <h3 style="color: white; font-size: 1.5rem;">Fondo / Quant</h3>
+                <p style="color: #888; margin: 1rem 0;">Infraestructura de latencia ultra-baja.</p>
+                <h2 style="color: white; font-size: 2.5rem; margin: 1.5rem 0;">$499<span style="font-size: 1rem; color: #555;"> / mes</span></h2>
+                <ul style="color: #aaa; line-height: 2; margin-bottom: 2.5rem; list-style: none; padding: 0;">
+                    <li style="color: white;">✓ <strong>Universo S&P 500 completo</strong></li>
+                    <li>✓ Conexión WebSocket directa</li>
+                    <li>✓ Nodos dedicados (Latencia <10ms)</li>
+                    <li>✓ Soporte de integración técnico</li>
+                </ul>
+                <a href="mailto:jlopezmenchen06@gmail.com?subject=Solicitud%20Licencia%20Quant%20-%20Kinematic%20DaaS" style="display: block; text-align: center; padding: 12px; background: #00ffcc; color: black; text-decoration: none; border-radius: 6px; font-weight: bold; box-shadow: 0 4px 15px rgba(0, 255, 204, 0.3);">Solicitar Acceso B2B</a>
+            </div>
         </div>
     </section>
 </body>
