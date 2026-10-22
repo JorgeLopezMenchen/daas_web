@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kinematic DaaS | Filtros de Régimen 4D</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Cargar la librería Lightweight Charts de TradingView -->
-    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    
+    <!-- Cargar la librería Lightweight Charts de TradingView (Versión Estable 4.1.1) -->
+    <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
+    
     <style>
         /* Estilos adicionales para que el gráfico encaje en tu contenedor hero-code */
         #tv-chart {
@@ -17,7 +19,7 @@
             background-color: #1a1a1a;
         }
         .hero-code {
-            padding: 10px; /* Reducimos padding para dar más espacio a la gráfica */
+            padding: 10px;
         }
     </style>
 </head>
@@ -120,39 +122,35 @@
         const chart = LightweightCharts.createChart(document.getElementById('tv-chart'), chartProperties);
         const lineSeries = chart.addLineSeries({ color: '#00ffcc', lineWidth: 2 });
         
-        let activeMarkers = []; // Array para guardar las señales visuales
+        let activeMarkers = []; 
         const API_URL = "https://complications-salmon-experience-chrome.trycloudflare.com/api/v1/market/state";
         const badge = document.getElementById("status-badge");
 
         // 2. Función recursiva para sondear el servidor de Python
         async function fetchMarketData() {
             try {
-                // Añadimos timestamp para evitar caché en peticiones GET continuas
                 const response = await fetch(`${API_URL}?nocache=${new Date().getTime()}`);
-                const data = await response.json();
+                const rawResponse = await response.json();
 
-                if (data.detail && data.detail.includes("Servicio no disponible")) {
+                if (rawResponse.detail && rawResponse.detail.includes("Servicio no disponible")) {
                     badge.innerText = "MERCADO CERRADO";
                     badge.style.background = "#555";
                     return;
                 }
 
-                if (data.QQQ) {
-                    const price = data.QQQ.precio;
-                    const regimen = data.QQQ.regimen;
+                // CORRECCIÓN: Accedemos al nodo "data" maestro y luego a "QQQ"
+                if (rawResponse.data && rawResponse.data.QQQ) {
+                    const qqqData = rawResponse.data.QQQ;
+                    const price = qqqData.precio;
+                    const regimen = qqqData.regimen;
                     
-                    // Asegurar timestamp único sumando milisegundos en formato UNIX
-                    // Lightweight Charts requiere formato Unix Epoch en segundos o formato YYYY-MM-DD
-                    // Como es intradía de alta frecuencia, forzamos un epoch incremental para el demo
                     const currentTime = Math.floor(Date.now() / 1000); 
 
-                    // Actualizar curva de precio
+                    // Actualizar línea de precio
                     lineSeries.update({ time: currentTime, value: price });
-                    
-                    // Actualizar el estado (Badge)
                     badge.innerText = regimen;
                     
-                    // Pintar visualmente las anomalías extremas
+                    // Pintar anomalías extremas
                     if (regimen.includes("IGNICIÓN") || regimen.includes("SHOCK POSITIVO")) {
                         badge.style.background = "rgba(0,255,204,0.2)";
                         badge.style.color = "#00ffcc";
@@ -166,7 +164,6 @@
                         badge.style.color = "white";
                     }
 
-                    // Limitar a los 5 últimos marcadores para no saturar la pantalla
                     if(activeMarkers.length > 5) activeMarkers.shift();
                     lineSeries.setMarkers(activeMarkers);
                 }
