@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kinematic DaaS | Filtros de Régimen 4D</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Cargar la librería Lightweight Charts de TradingView -->
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <style>
+        /* Estilos adicionales para que el gráfico encaje en tu contenedor hero-code */
+        #tv-chart {
+            width: 100%;
+            height: 300px;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #1a1a1a;
+        }
+        .hero-code {
+            padding: 10px; /* Reducimos padding para dar más espacio a la gráfica */
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -21,33 +36,24 @@
             <h1>Motor DaaS B2B Operativo.</h1>
             <p>Calculamos la velocidad, aceleración y el <span style="color: #00ffcc; font-weight: bold;">Jerk</span> del mercado en milisegundos mediante Filtros de Kalman 4D. Conéctate a nuestro feed institucional y opera con la matemática aeroespacial de tu lado.</p>
             <div class="cta-group">
-                <a href="https://reflects-tracking-polls-packed.trycloudflare.com/docs" class="btn-primary">Probar Endpoints en Vivo</a>
+                <a href="https://complications-salmon-experience-chrome.trycloudflare.com/docs" class="btn-primary">Probar Endpoints en Vivo</a>
                 <a href="#pricing" class="btn-secondary">Ver Planes de Acceso</a>
             </div>
         </div>
+        
+        <!-- El Escaparate Visual: Contenedor del Gráfico Dinámico -->
         <div class="hero-code">
-            <div class="code-header">
-                <span class="dot red"></span>
-                <span class="dot yellow"></span>
-                <span class="dot green"></span>
-                <span class="title">GET /api/v1/market/state</span>
+            <div class="code-header" style="margin-bottom: 10px; display: flex; justify-content: space-between;">
+                <div>
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                    <span class="title">Telemetría QQQ (NASDAQ) - Tiempo Real</span>
+                </div>
+                <div id="status-badge" style="font-size: 0.8rem; padding: 2px 8px; border-radius: 4px; background: #333; color: white;">CONECTANDO...</div>
             </div>
-            <pre><code>{
-  "QQQ": {
-    "precio": 731.00,
-    "velocidad": -0.277,
-    "aceleracion": -0.117,
-    "jerk": -0.02914,
-    "regimen": "🚨 COLAPSO"
-  },
-  "TSLA": {
-    "precio": 218.42,
-    "velocidad": 0.084,
-    "aceleracion": -0.012,
-    "jerk": -0.00511,
-    "regimen": "⚠️ FRENADA BRUSCA"
-  }
-}</code></pre>
+            <!-- Aquí se inyectará la gráfica de TradingView -->
+            <div id="tv-chart"></div>
         </div>
     </header>
 
@@ -102,5 +108,77 @@
             </div>
         </div>
     </section>
+
+    <!-- Script de Inicialización del Gráfico Dinámico -->
+    <script>
+        // 1. Configurar el lienzo (Chart) con estilo oscuro institucional
+        const chartProperties = {
+            layout: { background: { type: 'solid', color: '#1a1a1a' }, textColor: '#d1d4dc' },
+            grid: { vertLines: { color: '#2b2b2b' }, horzLines: { color: '#2b2b2b' } },
+            timeScale: { timeVisible: true, secondsVisible: true },
+        };
+        const chart = LightweightCharts.createChart(document.getElementById('tv-chart'), chartProperties);
+        const lineSeries = chart.addLineSeries({ color: '#00ffcc', lineWidth: 2 });
+        
+        let activeMarkers = []; // Array para guardar las señales visuales
+        const API_URL = "https://complications-salmon-experience-chrome.trycloudflare.com/api/v1/market/state";
+        const badge = document.getElementById("status-badge");
+
+        // 2. Función recursiva para sondear el servidor de Python
+        async function fetchMarketData() {
+            try {
+                // Añadimos timestamp para evitar caché en peticiones GET continuas
+                const response = await fetch(`${API_URL}?nocache=${new Date().getTime()}`);
+                const data = await response.json();
+
+                if (data.detail && data.detail.includes("Servicio no disponible")) {
+                    badge.innerText = "MERCADO CERRADO";
+                    badge.style.background = "#555";
+                    return;
+                }
+
+                if (data.QQQ) {
+                    const price = data.QQQ.precio;
+                    const regimen = data.QQQ.regimen;
+                    
+                    // Asegurar timestamp único sumando milisegundos en formato UNIX
+                    // Lightweight Charts requiere formato Unix Epoch en segundos o formato YYYY-MM-DD
+                    // Como es intradía de alta frecuencia, forzamos un epoch incremental para el demo
+                    const currentTime = Math.floor(Date.now() / 1000); 
+
+                    // Actualizar curva de precio
+                    lineSeries.update({ time: currentTime, value: price });
+                    
+                    // Actualizar el estado (Badge)
+                    badge.innerText = regimen;
+                    
+                    // Pintar visualmente las anomalías extremas
+                    if (regimen.includes("IGNICIÓN") || regimen.includes("SHOCK POSITIVO")) {
+                        badge.style.background = "rgba(0,255,204,0.2)";
+                        badge.style.color = "#00ffcc";
+                        activeMarkers.push({ time: currentTime, position: 'belowBar', color: '#00ffcc', shape: 'arrowUp', text: 'ALCISTA' });
+                    } else if (regimen.includes("COLAPSO") || regimen.includes("SHOCK NEGATIVO")) {
+                        badge.style.background = "rgba(255,50,50,0.2)";
+                        badge.style.color = "#ff3333";
+                        activeMarkers.push({ time: currentTime, position: 'aboveBar', color: '#ff3333', shape: 'arrowDown', text: 'BAJISTA' });
+                    } else {
+                        badge.style.background = "#333";
+                        badge.style.color = "white";
+                    }
+
+                    // Limitar a los 5 últimos marcadores para no saturar la pantalla
+                    if(activeMarkers.length > 5) activeMarkers.shift();
+                    lineSeries.setMarkers(activeMarkers);
+                }
+            } catch (error) {
+                console.error("Error en telemetría:", error);
+                badge.innerText = "DESCONECTADO";
+                badge.style.background = "#ff3333";
+            }
+        }
+
+        // 3. Arrancar el motor en el navegador leyendo la API cada 1.5 segundos
+        setInterval(fetchMarketData, 1500);
+    </script>
 </body>
 </html>
