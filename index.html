@@ -129,7 +129,7 @@
         // 2. Función recursiva para sondear el servidor de Python
         async function fetchMarketData() {
             try {
-                // AQUÍ ESTÁ EL CAMBIO: Mandamos la API Key en las cabeceras (headers)
+                // Mandamos la API Key en las cabeceras (headers)
                 const response = await fetch(`${API_URL}?nocache=${new Date().getTime()}`, {
                     headers: {
                         "X-API-Key": "sandbox_dev_test"
@@ -149,7 +149,9 @@
                     const price = qqqData.precio;
                     const regimen = qqqData.regimen;
                     
-                    const currentTime = Math.floor(Date.now() / 1000); 
+                    // CORRECCIÓN: Ajuste de zona horaria para el navegador del cliente
+                    const offset = new Date().getTimezoneOffset() * 60;
+                    const currentTime = Math.floor(Date.now() / 1000) - offset;
 
                     // Actualizar línea de precio
                     lineSeries.update({ time: currentTime, value: price });
