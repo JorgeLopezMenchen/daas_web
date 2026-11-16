@@ -129,7 +129,13 @@
         // 2. Función recursiva para sondear el servidor de Python
         async function fetchMarketData() {
             try {
-                const response = await fetch(`${API_URL}?nocache=${new Date().getTime()}`);
+                // AQUÍ ESTÁ EL CAMBIO: Mandamos la API Key en las cabeceras (headers)
+                const response = await fetch(`${API_URL}?nocache=${new Date().getTime()}`, {
+                    headers: {
+                        "X-API-Key": "sandbox_dev_test"
+                    }
+                });
+                
                 const rawResponse = await response.json();
 
                 if (rawResponse.detail && rawResponse.detail.includes("Servicio no disponible")) {
@@ -138,7 +144,6 @@
                     return;
                 }
 
-                // CORRECCIÓN: Accedemos al nodo "data" maestro y luego a "QQQ"
                 if (rawResponse.data && rawResponse.data.QQQ) {
                     const qqqData = rawResponse.data.QQQ;
                     const price = qqqData.precio;
