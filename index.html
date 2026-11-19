@@ -29,6 +29,34 @@
         }
         .hero-code {
             padding: 10px;
+            min-width: 0;
+            box-sizing: border-box;
+        }
+        .navbar .links {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+        .navbar .links a.nav-btn-outline {
+            padding: 10px 18px;
+            background: transparent;
+            border: 1px solid #00ffcc;
+            color: #00ffcc;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .navbar .links a.nav-btn-solid {
+            padding: 10px 18px;
+            background: #00ffcc;
+            color: #000000;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            font-family: inherit;
+            white-space: nowrap;
         }
         .pricing-grid {
             display: flex;
@@ -49,10 +77,81 @@
             flex-direction: column;
             justify-content: space-between;
             position: relative;
+            box-sizing: border-box;
         }
         .pricing-card.featured {
             background: rgba(0, 255, 204, 0.05);
             border: 1px solid #00ffcc;
+        }
+
+        /* Correcciones responsive para móvil y tablet estrecha */
+        @media (max-width: 860px) {
+            html, body {
+                overflow-x: hidden;
+            }
+            .navbar {
+                position: relative !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 0.85rem !important;
+                padding: 1rem !important;
+                height: auto !important;
+            }
+            .navbar .links {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+                align-items: center !important;
+                gap: 0.65rem !important;
+                width: 100% !important;
+                margin: 0 !important;
+            }
+            .navbar .links a {
+                margin: 0 !important;
+                font-size: 0.85rem !important;
+            }
+            .navbar .links a.nav-btn-outline,
+            .navbar .links a.nav-btn-solid {
+                padding: 7px 12px !important;
+            }
+            .hero {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                padding: 2rem 1.25rem !important;
+                gap: 1.75rem !important;
+                height: auto !important;
+                min-height: auto !important;
+            }
+            .hero-content {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            .cta-group {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                gap: 0.75rem !important;
+            }
+            .hero-code {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                margin: 0 !important;
+            }
+            .code-header {
+                flex-wrap: wrap !important;
+                gap: 8px !important;
+                align-items: center !important;
+            }
+            #tv-chart {
+                width: 100% !important;
+                height: 260px !important;
+            }
+            .pricing-card {
+                width: 100% !important;
+                max-width: 340px !important;
+            }
         }
     </style>
 </head>
@@ -62,8 +161,8 @@
         <div class="links">
             <a href="#features">Tecnología</a>
             <a href="#pricing">Planes</a>
-            <a href="https://api.leviatan-quant.com/docs" target="_blank" rel="noopener noreferrer" style="padding: 10px 18px; background: transparent; border: 1px solid #00ffcc; color: #00ffcc; border-radius: 6px; text-decoration: none; font-weight: bold; font-family: inherit;">API Docs</a>
-            <a href="https://app.leviatan-quant.com" style="padding: 10px 18px; background: #00ffcc; color: #000; border-radius: 6px; text-decoration: none; font-weight: bold; font-family: inherit;">Terminal 4D</a>
+            <a href="https://api.leviatan-quant.com/docs" target="_blank" rel="noopener noreferrer" class="nav-btn-outline">API Docs</a>
+            <a href="https://app.leviatan-quant.com" class="nav-btn-solid">Terminal 4D</a>
         </div>
     </nav>
 
@@ -108,7 +207,7 @@
     </section>
 
     <!-- Sección de Pricing -->
-    <section id="pricing" style="padding: 5rem 2rem; text-align: center; border-top: 1px solid #222;">
+    <section id="pricing" style="padding: 5rem 1.25rem; text-align: center; border-top: 1px solid #222;">
         <h2 style="color: white; margin-bottom: 1rem; font-size: 2.5rem;">Licencias de Datos</h2>
         <p style="color: #888; margin-bottom: 3rem; max-width: 640px; margin-left: auto; margin-right: auto;">Activación inmediata: tras completar el pago recibirás tu clave <code style="color: #00ffcc;">X-API-Key</code> automáticamente por correo desde <strong style="color: #ccc;">access@leviatan-quant.com</strong>.</p>
         
@@ -176,6 +275,8 @@
     <script>
         const chartContainer = document.getElementById('tv-chart');
         const chartProperties = {
+            width: chartContainer.clientWidth || Math.max(280, window.innerWidth - 48),
+            height: chartContainer.clientHeight || 280,
             layout: { background: { type: 'solid', color: '#1a1a1a' }, textColor: '#d1d4dc' },
             grid: { vertLines: { color: '#2b2b2b' }, horzLines: { color: '#2b2b2b' } },
             timeScale: { timeVisible: true, secondsVisible: true },
@@ -183,9 +284,18 @@
         const chart = LightweightCharts.createChart(chartContainer, chartProperties);
         const lineSeries = chart.addLineSeries({ color: '#00ffcc', lineWidth: 2 });
 
-        window.addEventListener('resize', () => {
-            chart.applyOptions({ width: chartContainer.clientWidth });
-        });
+        const resizeChart = () => {
+            const w = chartContainer.clientWidth;
+            const h = chartContainer.clientHeight || 280;
+            if (w > 0) {
+                chart.applyOptions({ width: w, height: h });
+            }
+        };
+
+        if (typeof ResizeObserver !== 'undefined') {
+            new ResizeObserver(resizeChart).observe(chartContainer);
+        }
+        window.addEventListener('resize', resizeChart);
 
         let activeMarkers = [];
         let lastTime = 0;
