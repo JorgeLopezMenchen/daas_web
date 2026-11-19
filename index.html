@@ -30,6 +30,30 @@
         .hero-code {
             padding: 10px;
         }
+        .pricing-grid {
+            display: flex;
+            gap: 1.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 1120px;
+            margin: 0 auto;
+        }
+        .pricing-card {
+            background: #111;
+            padding: 2.25rem;
+            border-radius: 12px;
+            border: 1px solid #333;
+            width: 330px;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+        .pricing-card.featured {
+            background: rgba(0, 255, 204, 0.05);
+            border: 1px solid #00ffcc;
+        }
     </style>
 </head>
 <body>
@@ -37,8 +61,9 @@
         <div class="logo">Leviatan<span>Quant</span></div>
         <div class="links">
             <a href="#features">Tecnología</a>
-            <a href="#pricing">Planes Institucionales</a>
-            <a href="https://api.leviatan-quant.com/docs" style="padding: 10px 20px; background: transparent; border: 1px solid #00ffcc; color: #00ffcc; border-radius: 6px; text-decoration: none; font-weight: bold; font-family: inherit;">API Docs</a>
+            <a href="#pricing">Planes</a>
+            <a href="https://api.leviatan-quant.com/docs" target="_blank" rel="noopener noreferrer" style="padding: 10px 18px; background: transparent; border: 1px solid #00ffcc; color: #00ffcc; border-radius: 6px; text-decoration: none; font-weight: bold; font-family: inherit;">API Docs</a>
+            <a href="https://app.leviatan-quant.com" style="padding: 10px 18px; background: #00ffcc; color: #000; border-radius: 6px; text-decoration: none; font-weight: bold; font-family: inherit;">Terminal 4D</a>
         </div>
     </nav>
 
@@ -47,8 +72,8 @@
             <h1>Motor DaaS B2B Operativo.</h1>
             <p>Calculamos la velocidad, aceleración y el <span style="color: #00ffcc; font-weight: bold;">Jerk</span> del mercado en milisegundos mediante Filtros de Kalman 4D. Conéctate a nuestro feed institucional y opera con la matemática aeroespacial de tu lado.</p>
             <div class="cta-group">
-                <a href="https://api.leviatan-quant.com/docs" class="btn-primary">Probar Endpoints en Vivo</a>
-                <a href="#pricing" class="btn-secondary">Ver Planes de Acceso</a>
+                <a href="#pricing" class="btn-primary">Ver Planes de Acceso</a>
+                <a href="https://app.leviatan-quant.com" class="btn-secondary">Abrir Terminal 4D</a>
             </div>
         </div>
         
@@ -85,38 +110,66 @@
     <!-- Sección de Pricing -->
     <section id="pricing" style="padding: 5rem 2rem; text-align: center; border-top: 1px solid #222;">
         <h2 style="color: white; margin-bottom: 1rem; font-size: 2.5rem;">Licencias de Datos</h2>
-        <p style="color: #888; margin-bottom: 3rem; max-width: 600px; margin-left: auto; margin-right: auto;">Integración directa para desarrolladores y firmas cuantitativas.</p>
+        <p style="color: #888; margin-bottom: 3rem; max-width: 640px; margin-left: auto; margin-right: auto;">Activación inmediata: tras completar el pago recibirás tu clave <code style="color: #00ffcc;">X-API-Key</code> automáticamente por correo desde <strong style="color: #ccc;">access@leviatan-quant.com</strong>.</p>
         
-        <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
-            <!-- Plan Developer -->
-            <div style="background: #111; padding: 2.5rem; border-radius: 12px; border: 1px solid #333; width: 320px; text-align: left;">
-                <h3 style="color: white; font-size: 1.5rem;">Sandbox API</h3>
-                <p style="color: #888; margin: 1rem 0;">Para evaluación y backtesting local.</p>
-                <h2 style="color: white; font-size: 2.5rem; margin: 1.5rem 0;">$0<span style="font-size: 1rem; color: #555;"> / mes</span></h2>
-                <ul style="color: #aaa; line-height: 2; margin-bottom: 2.5rem; list-style: none; padding: 0;">
-                    <li>✓ Endpoint REST público</li>
-                    <li>✓ Cesta (7 Tickers Institucionales)</li>
-                    <li>✓ Límite de 60 request/minuto</li>
-                    <li>✗ Conexión WebSocket</li>
-                </ul>
-                <a href="https://api.leviatan-quant.com/docs" style="display: block; text-align: center; padding: 12px; background: #222; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; border: 1px solid #444;">Acceder al Swagger</a>
+        <div class="pricing-grid">
+            <!-- Plan Sandbox -->
+            <div class="pricing-card">
+                <div>
+                    <h3 style="color: white; font-size: 1.5rem;">Sandbox API</h3>
+                    <p style="color: #888; margin: 1rem 0;">Para evaluación rápida y pruebas en Swagger.</p>
+                    <h2 style="color: white; font-size: 2.5rem; margin: 1.5rem 0;">0 €<span style="font-size: 1rem; color: #555;"> / mes</span></h2>
+                    <ul style="color: #aaa; line-height: 2; margin-bottom: 2.25rem; list-style: none; padding: 0;">
+                        <li>✓ Endpoint REST público (<code style="color: #ccc;">/public/demo</code>)</li>
+                        <li>✓ Demo en vivo sobre QQQ sin API Key</li>
+                        <li>✓ Límite de 60 req/min</li>
+                        <li>✗ Histórico PostgreSQL</li>
+                        <li>✗ WebSocket y Terminal 4D</li>
+                    </ul>
+                </div>
+                <a href="https://api.leviatan-quant.com/docs" target="_blank" rel="noopener noreferrer" style="display: block; text-align: center; padding: 12px; background: #222; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; border: 1px solid #444;">Acceder al Swagger</a>
             </div>
 
-            <!-- Plan Quant -->
-            <div style="background: rgba(0, 255, 204, 0.05); padding: 2.5rem; border-radius: 12px; border: 1px solid #00ffcc; width: 320px; text-align: left; position: relative;">
+            <!-- Plan Pro -->
+            <div class="pricing-card">
+                <div>
+                    <h3 style="color: white; font-size: 1.5rem;">Leviatan Quant Pro</h3>
+                    <p style="color: #888; margin: 1rem 0;">Integración REST e histórico para algoritmos y backtesting.</p>
+                    <h2 style="color: white; font-size: 2.5rem; margin: 1.5rem 0;">99 €<span style="font-size: 1rem; color: #555;"> / mes</span></h2>
+                    <ul style="color: #aaa; line-height: 2; margin-bottom: 2.25rem; list-style: none; padding: 0;">
+                        <li style="color: white;">✓ <strong>API REST Filtro Kalman 4D (300 req/min)</strong></li>
+                        <li>✓ Cesta de 7 tickers (SPY, QQQ, NVDA, AAPL, MSFT, AMZN, TSLA)</li>
+                        <li>✓ Acceso al histórico PostgreSQL</li>
+                        <li>✓ Alta automática de <code style="color: #ccc;">X-API-Key</code></li>
+                        <li>✗ Streaming WebSocket en vivo</li>
+                    </ul>
+                </div>
+                <a href="https://buy.stripe.com/14AdR97fk58ZfhBdFN8N200" target="_blank" rel="noopener noreferrer" style="display: block; text-align: center; padding: 12px; background: transparent; color: #00ffcc; text-decoration: none; border-radius: 6px; font-weight: bold; border: 1px solid #00ffcc;">Contratar Plan Pro</a>
+            </div>
+
+            <!-- Plan Institucional -->
+            <div class="pricing-card featured">
                 <span style="position: absolute; top: -12px; right: 24px; background: #00ffcc; color: black; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold;">RECOMENDADO</span>
-                <h3 style="color: white; font-size: 1.5rem;">Fondo / Quant</h3>
-                <p style="color: #888; margin: 1rem 0;">Infraestructura de latencia ultra-baja.</p>
-                <h2 style="color: white; font-size: 2.5rem; margin: 1.5rem 0;">$499<span style="font-size: 1rem; color: #555;"> / mes</span></h2>
-                <ul style="color: #aaa; line-height: 2; margin-bottom: 2.5rem; list-style: none; padding: 0;">
-                    <li style="color: white;">✓ <strong>Universo S&P 500 completo</strong></li>
-                    <li>✓ Conexión WebSocket directa</li>
-                    <li>✓ Nodos dedicados (Latencia &lt;10ms)</li>
-                    <li>✓ Soporte de integración técnico</li>
-                </ul>
-                <a href="https://api.leviatan-quant.com/docs" style="display: block; text-align: center; padding: 12px; background: #00ffcc; color: black; text-decoration: none; border-radius: 6px; font-weight: bold; box-shadow: 0 4px 15px rgba(0, 255, 204, 0.3);">Solicitar Acceso B2B</a>
+                <div>
+                    <h3 style="color: white; font-size: 1.5rem;">Leviatan Quant Institucional</h3>
+                    <p style="color: #888; margin: 1rem 0;">Feed completo en tiempo real y acceso al Terminal 4D.</p>
+                    <h2 style="color: white; font-size: 2.5rem; margin: 1.5rem 0;">499 €<span style="font-size: 1rem; color: #555;"> / mes</span></h2>
+                    <ul style="color: #aaa; line-height: 2; margin-bottom: 2.25rem; list-style: none; padding: 0;">
+                        <li style="color: white;">✓ <strong>Streaming WebSocket en vivo (<code style="color: #00ffcc;">wss://</code>)</strong></li>
+                        <li style="color: white;">✓ <strong>Acceso al Terminal 4D (<code style="color: #00ffcc;">app.leviatan-quant.com</code>)</strong></li>
+                        <li>✓ API REST ampliada (600 req/min)</li>
+                        <li>✓ Cesta de 7 tickers (SPY, QQQ, NVDA, AAPL, MSFT, AMZN, TSLA)</li>
+                        <li>✓ Histórico completo de shocks en PostgreSQL</li>
+                    </ul>
+                </div>
+                <a href="https://buy.stripe.com/00wbJ1czE8lb1qL59h8N201" target="_blank" rel="noopener noreferrer" style="display: block; text-align: center; padding: 12px; background: #00ffcc; color: black; text-decoration: none; border-radius: 6px; font-weight: bold; box-shadow: 0 4px 15px rgba(0, 255, 204, 0.3);">Contratar Institucional</a>
             </div>
         </div>
+
+        <p style="color: #777; margin-top: 2.5rem; font-size: 0.95rem;">
+            ¿Ya tienes tu licencia <code style="color: #aaa;">X-API-Key</code>?
+            <a href="https://app.leviatan-quant.com" style="color: #00ffcc; text-decoration: none; font-weight: bold; margin-left: 6px;">Conectar al Terminal 4D →</a>
+        </p>
     </section>
 
     <!-- Script de Inicialización del Gráfico Dinámico -->
