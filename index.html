@@ -3,14 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kinematic DaaS | Filtros de Régimen 4D</title>
+    <title>Leviatan Quant | Motor DaaS B2B y Filtros de Kalman 4D</title>
+    <meta name="description" content="API institucional de telemetría cuantitativa y detección temprana de regímenes de mercado en tiempo real mediante Filtros de Kalman 4D (velocidad, aceleración y Jerk).">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://leviatan-quant.com/">
+
+    <!-- Open Graph para indexación y previsualización B2B -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://leviatan-quant.com/">
+    <meta property="og:title" content="Leviatan Quant | Motor DaaS B2B Operativo">
+    <meta property="og:description" content="Feed cuantitativo en tiempo real basado en Filtros de Kalman 4D para detección temprana de shocks de mercado.">
+
     <link rel="stylesheet" href="style.css">
     
-    <!-- Cargar la librería Lightweight Charts de TradingView (Versión Estable 4.1.1) -->
+    <!-- Librería Lightweight Charts de TradingView (Versión Estable 4.1.1) -->
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     
     <style>
-        /* Estilos adicionales para que el gráfico encaje en tu contenedor hero-code */
         #tv-chart {
             width: 100%;
             height: 300px;
@@ -25,7 +34,7 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="logo">Kinematic<span>DaaS</span></div>
+        <div class="logo">Leviatan<span>Quant</span></div>
         <div class="links">
             <a href="#features">Tecnología</a>
             <a href="#pricing">Planes Institucionales</a>
@@ -43,7 +52,7 @@
             </div>
         </div>
         
-        <!-- El Escaparate Visual: Contenedor del Gráfico Dinámico -->
+        <!-- Contenedor del Gráfico Dinámico -->
         <div class="hero-code">
             <div class="code-header" style="margin-bottom: 10px; display: flex; justify-content: space-between;">
                 <div>
@@ -54,7 +63,6 @@
                 </div>
                 <div id="status-badge" style="font-size: 0.8rem; padding: 2px 8px; border-radius: 4px; background: #333; color: white;">CONECTANDO...</div>
             </div>
-            <!-- Aquí se inyectará la gráfica de TradingView -->
             <div id="tv-chart"></div>
         </div>
     </header>
@@ -103,7 +111,7 @@
                 <ul style="color: #aaa; line-height: 2; margin-bottom: 2.5rem; list-style: none; padding: 0;">
                     <li style="color: white;">✓ <strong>Universo S&P 500 completo</strong></li>
                     <li>✓ Conexión WebSocket directa</li>
-                    <li>✓ Nodos dedicados (Latencia <10ms)</li>
+                    <li>✓ Nodos dedicados (Latencia &lt;10ms)</li>
                     <li>✓ Soporte de integración técnico</li>
                 </ul>
                 <a href="https://api.leviatan-quant.com/docs" style="display: block; text-align: center; padding: 12px; background: #00ffcc; color: black; text-decoration: none; border-radius: 6px; font-weight: bold; box-shadow: 0 4px 15px rgba(0, 255, 204, 0.3);">Solicitar Acceso B2B</a>
@@ -113,51 +121,62 @@
 
     <!-- Script de Inicialización del Gráfico Dinámico -->
     <script>
-        // 1. Configurar el lienzo (Chart) con estilo oscuro institucional
+        const chartContainer = document.getElementById('tv-chart');
         const chartProperties = {
             layout: { background: { type: 'solid', color: '#1a1a1a' }, textColor: '#d1d4dc' },
             grid: { vertLines: { color: '#2b2b2b' }, horzLines: { color: '#2b2b2b' } },
             timeScale: { timeVisible: true, secondsVisible: true },
         };
-        const chart = LightweightCharts.createChart(document.getElementById('tv-chart'), chartProperties);
+        const chart = LightweightCharts.createChart(chartContainer, chartProperties);
         const lineSeries = chart.addLineSeries({ color: '#00ffcc', lineWidth: 2 });
-        
-        let activeMarkers = []; 
-        const API_URL = "https://api.leviatan-quant.com/api/v1/market/state";
+
+        window.addEventListener('resize', () => {
+            chart.applyOptions({ width: chartContainer.clientWidth });
+        });
+
+        let activeMarkers = [];
+        let lastTime = 0;
+        const API_URL = "https://api.leviatan-quant.com/api/v1/public/demo";
         const badge = document.getElementById("status-badge");
 
-        // 2. Función recursiva para sondear el servidor de Python
         async function fetchMarketData() {
             try {
-                // Mandamos la API Key en las cabeceras (headers)
-                const response = await fetch(`${API_URL}?nocache=${new Date().getTime()}`, {
-                    headers: {
-                        "X-API-Key": "sandbox_dev_test"
-                    }
-                });
-                
+                const response = await fetch(`${API_URL}?nocache=${Date.now()}`);
+
+                if (response.status === 429) {
+                    badge.innerText = "RATE LIMIT (60/MIN)";
+                    badge.style.background = "#555";
+                    badge.style.color = "white";
+                    return;
+                }
+
                 const rawResponse = await response.json();
 
-                if (rawResponse.detail && rawResponse.detail.includes("Servicio no disponible")) {
+                if (response.status === 503 || (rawResponse.detail && rawResponse.detail.includes("Servicio no disponible"))) {
                     badge.innerText = "MERCADO CERRADO";
                     badge.style.background = "#555";
+                    badge.style.color = "white";
                     return;
+                }
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
                 }
 
                 if (rawResponse.data && rawResponse.data.QQQ) {
                     const qqqData = rawResponse.data.QQQ;
                     const price = qqqData.precio;
                     const regimen = qqqData.regimen;
-                    
-                    // CORRECCIÓN: Ajuste de zona horaria para el navegador del cliente
+
                     const offset = new Date().getTimezoneOffset() * 60;
                     const currentTime = Math.floor(Date.now() / 1000) - offset;
 
-                    // Actualizar línea de precio
+                    if (currentTime <= lastTime) return;
+                    lastTime = currentTime;
+
                     lineSeries.update({ time: currentTime, value: price });
                     badge.innerText = regimen;
-                    
-                    // Pintar anomalías extremas
+
                     if (regimen.includes("IGNICIÓN") || regimen.includes("SHOCK POSITIVO")) {
                         badge.style.background = "rgba(0,255,204,0.2)";
                         badge.style.color = "#00ffcc";
@@ -171,17 +190,19 @@
                         badge.style.color = "white";
                     }
 
-                    if(activeMarkers.length > 5) activeMarkers.shift();
+                    if (activeMarkers.length > 5) activeMarkers.shift();
                     lineSeries.setMarkers(activeMarkers);
                 }
             } catch (error) {
                 console.error("Error en telemetría:", error);
                 badge.innerText = "DESCONECTADO";
                 badge.style.background = "#ff3333";
+                badge.style.color = "white";
             }
         }
 
-        // 3. Arrancar el motor en el navegador leyendo la API cada 1.5 segundos
+        // Primera lectura inmediata y sondeo cada 1.5s (40 req/min, dentro del límite de 60/min)
+        fetchMarketData();
         setInterval(fetchMarketData, 1500);
     </script>
 </body>
