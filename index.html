@@ -3,16 +3,317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kinematic DaaS | Filtros de Régimen 4D</title>
+    <title>Leviatan Quant | Motor DaaS B2B y Filtros de Kalman 4D</title>
+    <meta name="description" content="API institucional de telemetría cuantitativa y detección temprana de regímenes de mercado en tiempo real mediante Filtros de Kalman 4D (velocidad, aceleración y Jerk).">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://leviatan-quant.com/">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <!-- Open Graph para indexación y previsualización B2B -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://leviatan-quant.com/">
+    <meta property="og:title" content="Leviatan Quant | Motor DaaS B2B Operativo">
+    <meta property="og:description" content="Feed cuantitativo en tiempo real basado en Filtros de Kalman 4D para detección temprana de shocks de mercado.">
+
     <link rel="stylesheet" href="style.css">
+
+    <!-- Librería Lightweight Charts de TradingView (Versión Estable 4.1.1) -->
+    <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
+
+    <style>
+        #tv-chart {
+            width: 100%;
+            height: 300px;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #1a1a1a;
+        }
+        .hero-code {
+            padding: 10px;
+            min-width: 0;
+            box-sizing: border-box;
+        }
+        .navbar .links {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+        .navbar .links a.nav-btn-outline {
+            padding: 10px 18px;
+            background: transparent;
+            border: 1px solid #00ffcc;
+            color: #00ffcc;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .navbar .links a.nav-btn-solid {
+            padding: 10px 18px;
+            background: #00ffcc;
+            color: #000000;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .pricing-grid {
+            display: flex;
+            gap: 1.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 1120px;
+            margin: 0 auto;
+        }
+        .pricing-card {
+            background: #111;
+            padding: 2.25rem;
+            border-radius: 12px;
+            border: 1px solid #333;
+            width: 330px;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            box-sizing: border-box;
+        }
+        .pricing-card.featured {
+            background: rgba(0, 255, 204, 0.05);
+            border: 1px solid #00ffcc;
+        }
+
+        /* Sección FAQ */
+        .faq-section {
+            padding: 4.5rem 1.25rem;
+            border-top: 1px solid #222;
+            max-width: 860px;
+            margin: 0 auto;
+        }
+        .faq-section h2 {
+            color: #ffffff;
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        .faq-subtitle {
+            color: #888;
+            text-align: center;
+            margin-bottom: 2.5rem;
+            font-size: 0.95rem;
+        }
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+        details.faq-item {
+            background: #111;
+            border: 1px solid #262626;
+            border-radius: 10px;
+            padding: 1.1rem 1.35rem;
+            transition: border-color 0.2s ease;
+        }
+        details.faq-item[open] {
+            border-color: rgba(0, 255, 204, 0.45);
+        }
+        details.faq-item summary {
+            color: #f0f6fc;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+        details.faq-item summary::-webkit-details-marker {
+            display: none;
+        }
+        details.faq-item summary::after {
+            content: "+";
+            color: #00ffcc;
+            font-size: 1.3rem;
+            font-weight: bold;
+            line-height: 1;
+        }
+        details.faq-item[open] summary::after {
+            content: "−";
+        }
+        details.faq-item p {
+            color: #aaa;
+            margin: 0.85rem 0 0 0;
+            line-height: 1.6;
+            font-size: 0.93rem;
+        }
+        details.faq-item a {
+            color: #00ffcc;
+            text-decoration: none;
+        }
+        details.faq-item a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer institucional */
+        .site-footer {
+            border-top: 1px solid #222;
+            background: #0a0c10;
+            padding: 3.5rem 1.25rem 2.25rem;
+            color: #888;
+            font-size: 0.9rem;
+        }
+        .footer-grid {
+            max-width: 1120px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 2.25rem;
+        }
+        .footer-brand .logo {
+            font-size: 1.35rem;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 0.75rem;
+        }
+        .footer-brand .logo span {
+            color: #00ffcc;
+        }
+        .footer-brand p {
+            color: #777;
+            line-height: 1.6;
+            margin: 0 0 0.85rem 0;
+            max-width: 340px;
+        }
+        .footer-col h4 {
+            color: #fff;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin: 0 0 1rem 0;
+        }
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+        .footer-col a {
+            color: #999;
+            text-decoration: none;
+            transition: color 0.15s ease;
+        }
+        .footer-col a:hover {
+            color: #00ffcc;
+        }
+        .footer-disclaimer {
+            max-width: 1120px;
+            margin: 2.5rem auto 0;
+            padding-top: 1.5rem;
+            border-top: 1px solid #1b1f27;
+            font-size: 0.78rem;
+            line-height: 1.6;
+            color: #666;
+        }
+        .footer-bottom {
+            max-width: 1120px;
+            margin: 1rem auto 0;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            font-size: 0.8rem;
+            color: #555;
+        }
+
+        /* Correcciones responsive para móvil y tablet estrecha */
+        @media (max-width: 860px) {
+            html, body {
+                overflow-x: hidden;
+            }
+            .navbar {
+                position: relative !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 0.85rem !important;
+                padding: 1rem !important;
+                height: auto !important;
+            }
+            .navbar .links {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+                align-items: center !important;
+                gap: 0.65rem !important;
+                width: 100% !important;
+                margin: 0 !important;
+            }
+            .navbar .links a {
+                margin: 0 !important;
+                font-size: 0.85rem !important;
+            }
+            .navbar .links a.nav-btn-outline,
+            .navbar .links a.nav-btn-solid {
+                padding: 7px 12px !important;
+            }
+            .hero {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                padding: 2rem 1.25rem !important;
+                gap: 1.75rem !important;
+                height: auto !important;
+                min-height: auto !important;
+            }
+            .hero-content {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            .cta-group {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                gap: 0.75rem !important;
+            }
+            .hero-code {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                margin: 0 !important;
+            }
+            .code-header {
+                flex-wrap: wrap !important;
+                gap: 8px !important;
+                align-items: center !important;
+            }
+            #tv-chart {
+                width: 100% !important;
+                height: 260px !important;
+            }
+            .pricing-card {
+                width: 100% !important;
+                max-width: 340px !important;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 1.75rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
-        <div class="logo">Kinematic<span>DaaS</span></div>
+        <div class="logo">Leviatan<span>Quant</span></div>
         <div class="links">
             <a href="#features">Tecnología</a>
-            <a href="#pricing">Planes Institucionales</a>
-            <a href="http://35.196.208.134:8000/docs" target="_blank" style="padding: 10px 20px; background: transparent; border: 1px solid #00ffcc; color: #00ffcc; border-radius: 6px; text-decoration: none; font-weight: bold; font-family: inherit;">API Docs</a>
+            <a href="#pricing">Planes</a>
+            <a href="#faq">FAQ</a>
+            <a href="https://api.leviatan-quant.com/docs" target="_blank" rel="noopener noreferrer" class="nav-btn-outline">API Docs</a>
+            <a href="https://app.leviatan-quant.com" class="nav-btn-solid">Terminal 4D</a>
         </div>
     </nav>
 
@@ -21,33 +322,23 @@
             <h1>Motor DaaS B2B Operativo.</h1>
             <p>Calculamos la velocidad, aceleración y el <span style="color: #00ffcc; font-weight: bold;">Jerk</span> del mercado en milisegundos mediante Filtros de Kalman 4D. Conéctate a nuestro feed institucional y opera con la matemática aeroespacial de tu lado.</p>
             <div class="cta-group">
-                <a href="http://35.196.208.134:8000/docs" class="btn-primary" target="_blank">Probar Endpoints en Vivo</a>
-                <a href="#pricing" class="btn-secondary">Ver Planes de Acceso</a>
+                <a href="#pricing" class="btn-primary">Ver Planes de Acceso</a>
+                <a href="https://app.leviatan-quant.com" class="btn-secondary">Abrir Terminal 4D</a>
             </div>
         </div>
+
+        <!-- Contenedor del Gráfico Dinámico -->
         <div class="hero-code">
-            <div class="code-header">
-                <span class="dot red"></span>
-                <span class="dot yellow"></span>
-                <span class="dot green"></span>
-                <span class="title">GET /api/v1/market/state</span>
+            <div class="code-header" style="margin-bottom: 10px; display: flex; justify-content: space-between;">
+                <div>
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                    <span class="title">Telemetría QQQ (NASDAQ) - Tiempo Real</span>
+                </div>
+                <div id="status-badge" style="font-size: 0.8rem; padding: 2px 8px; border-radius: 4px; background: #333; color: white;">CONECTANDO...</div>
             </div>
-            <pre><code>{
-  "QQQ": {
-    "precio": 731.00,
-    "velocidad": -0.277,
-    "aceleracion": -0.117,
-    "jerk": -0.02914,
-    "regimen": "🚨 COLAPSO"
-  },
-  "TSLA": {
-    "precio": 218.42,
-    "velocidad": 0.084,
-    "aceleracion": -0.012,
-    "jerk": -0.00511,
-    "regimen": "⚠️ FRENADA BRUSCA"
-  }
-}</code></pre>
+            <div id="tv-chart"></div>
         </div>
     </header>
 
@@ -67,40 +358,247 @@
     </section>
 
     <!-- Sección de Pricing -->
-    <section id="pricing" style="padding: 5rem 2rem; text-align: center; border-top: 1px solid #222;">
+    <section id="pricing" style="padding: 5rem 1.25rem; text-align: center; border-top: 1px solid #222;">
         <h2 style="color: white; margin-bottom: 1rem; font-size: 2.5rem;">Licencias de Datos</h2>
-        <p style="color: #888; margin-bottom: 3rem; max-width: 600px; margin-left: auto; margin-right: auto;">Integración directa para desarrolladores y firmas cuantitativas.</p>
-        
-        <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
-            <!-- Plan Developer -->
-            <div style="background: #111; padding: 2.5rem; border-radius: 12px; border: 1px solid #333; width: 320px; text-align: left;">
-                <h3 style="color: white; font-size: 1.5rem;">Sandbox API</h3>
-                <p style="color: #888; margin: 1rem 0;">Para evaluación y backtesting local.</p>
-                <h2 style="color: white; font-size: 2.5rem; margin: 1.5rem 0;">$0<span style="font-size: 1rem; color: #555;"> / mes</span></h2>
-                <ul style="color: #aaa; line-height: 2; margin-bottom: 2.5rem; list-style: none; padding: 0;">
-                    <li>✓ Endpoint REST público</li>
-                    <li>✓ Cesta (7 Tickers Institucionales)</li>
-                    <li>✓ Límite de 60 request/minuto</li>
-                    <li>✗ Conexión WebSocket</li>
-                </ul>
-                <a href="http://35.196.208.134:8000/docs" target="_blank" style="display: block; text-align: center; padding: 12px; background: #222; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; border: 1px solid #444;">Acceder al Swagger</a>
+        <p style="color: #888; margin-bottom: 3rem; max-width: 640px; margin-left: auto; margin-right: auto;">Activación inmediata: tras completar el pago recibirás tu clave <code style="color: #00ffcc;">X-API-Key</code> automáticamente por correo desde <strong style="color: #ccc;">access@leviatan-quant.com</strong>. Sin permanencia: cancela en un clic desde el portal de clientes.</p>
+
+        <div class="pricing-grid">
+            <!-- Plan Sandbox -->
+            <div class="pricing-card">
+                <div>
+                    <h3 style="color: white; font-size: 1.5rem;">Sandbox API</h3>
+                    <p style="color: #888; margin: 1rem 0;">Para evaluación rápida y pruebas interactivas.</p>
+                    <h2 style="color: white; font-size: 2.5rem; margin: 1.5rem 0;">0 €<span style="font-size: 1rem; color: #555;"> / mes</span></h2>
+                    <ul style="color: #aaa; line-height: 2; margin-bottom: 2.25rem; list-style: none; padding: 0;">
+                        <li>✓ Endpoint REST público (<code style="color: #ccc;">/public/demo</code>)</li>
+                        <li>✓ Demo en vivo sobre QQQ sin API Key</li>
+                        <li>✓ Límite de 60 req/min</li>
+                        <li>✗ Histórico PostgreSQL</li>
+                        <li>✗ WebSocket y Terminal 4D</li>
+                    </ul>
+                </div>
+                <a href="https://api.leviatan-quant.com/docs" target="_blank" rel="noopener noreferrer" style="display: block; text-align: center; padding: 12px; background: #222; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; border: 1px solid #444;">Explorar API Docs</a>
             </div>
 
-            <!-- Plan Quant -->
-            <div style="background: rgba(0, 255, 204, 0.05); padding: 2.5rem; border-radius: 12px; border: 1px solid #00ffcc; width: 320px; text-align: left; position: relative;">
+            <!-- Plan Pro -->
+            <div class="pricing-card">
+                <div>
+                    <h3 style="color: white; font-size: 1.5rem;">Leviatan Quant Pro</h3>
+                    <p style="color: #888; margin: 1rem 0;">Integración REST e histórico para algoritmos y backtesting.</p>
+                    <h2 style="color: white; font-size: 2.5rem; margin: 1.5rem 0;">99 €<span style="font-size: 1rem; color: #555;"> / mes</span></h2>
+                    <ul style="color: #aaa; line-height: 2; margin-bottom: 2.25rem; list-style: none; padding: 0;">
+                        <li style="color: white;">✓ <strong>API REST Filtro Kalman 4D (300 req/min)</strong></li>
+                        <li>✓ Cesta de 7 tickers (SPY, QQQ, NVDA, AAPL, MSFT, AMZN, TSLA)</li>
+                        <li>✓ Acceso al histórico PostgreSQL</li>
+                        <li>✓ Alta automática de <code style="color: #ccc;">X-API-Key</code></li>
+                        <li>✗ Streaming WebSocket en vivo</li>
+                    </ul>
+                </div>
+                <a href="https://buy.stripe.com/14AdR97fk58ZfhBdFN8N200" target="_blank" rel="noopener noreferrer" style="display: block; text-align: center; padding: 12px; background: transparent; color: #00ffcc; text-decoration: none; border-radius: 6px; font-weight: bold; border: 1px solid #00ffcc;">Contratar Plan Pro</a>
+            </div>
+
+            <!-- Plan Institucional -->
+            <div class="pricing-card featured">
                 <span style="position: absolute; top: -12px; right: 24px; background: #00ffcc; color: black; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold;">RECOMENDADO</span>
-                <h3 style="color: white; font-size: 1.5rem;">Fondo / Quant</h3>
-                <p style="color: #888; margin: 1rem 0;">Infraestructura de latencia ultra-baja.</p>
-                <h2 style="color: white; font-size: 2.5rem; margin: 1.5rem 0;">$499<span style="font-size: 1rem; color: #555;"> / mes</span></h2>
-                <ul style="color: #aaa; line-height: 2; margin-bottom: 2.5rem; list-style: none; padding: 0;">
-                    <li style="color: white;">✓ <strong>Universo S&P 500 completo</strong></li>
-                    <li>✓ Conexión WebSocket directa</li>
-                    <li>✓ Nodos dedicados (Latencia <10ms)</li>
-                    <li>✓ Soporte de integración técnico</li>
-                </ul>
-                <a href="mailto:jlopezmenchen06@gmail.com?subject=Solicitud%20Licencia%20Quant%20-%20Kinematic%20DaaS" style="display: block; text-align: center; padding: 12px; background: #00ffcc; color: black; text-decoration: none; border-radius: 6px; font-weight: bold; box-shadow: 0 4px 15px rgba(0, 255, 204, 0.3);">Solicitar Acceso B2B</a>
+                <div>
+                    <h3 style="color: white; font-size: 1.5rem;">Leviatan Quant Institucional</h3>
+                    <p style="color: #888; margin: 1rem 0;">Feed completo en tiempo real y acceso al Terminal 4D.</p>
+                    <h2 style="color: white; font-size: 2.5rem; margin: 1.5rem 0;">499 €<span style="font-size: 1rem; color: #555;"> / mes</span></h2>
+                    <ul style="color: #aaa; line-height: 2; margin-bottom: 2.25rem; list-style: none; padding: 0;">
+                        <li style="color: white;">✓ <strong>Streaming WebSocket en vivo (<code style="color: #00ffcc;">wss://</code>)</strong></li>
+                        <li style="color: white;">✓ <strong>Acceso al Terminal 4D (<code style="color: #00ffcc;">app.leviatan-quant.com</code>)</strong></li>
+                        <li>✓ API REST ampliada (600 req/min)</li>
+                        <li>✓ Cesta de 7 tickers (SPY, QQQ, NVDA, AAPL, MSFT, AMZN, TSLA)</li>
+                        <li>✓ Histórico completo de shocks en PostgreSQL</li>
+                    </ul>
+                </div>
+                <a href="https://buy.stripe.com/00wbJ1czE8lb1qL59h8N201" target="_blank" rel="noopener noreferrer" style="display: block; text-align: center; padding: 12px; background: #00ffcc; color: black; text-decoration: none; border-radius: 6px; font-weight: bold; box-shadow: 0 4px 15px rgba(0, 255, 204, 0.3);">Contratar Institucional</a>
             </div>
         </div>
+
+        <p style="color: #777; margin-top: 2.5rem; font-size: 0.95rem;">
+            ¿Ya tienes tu licencia <code style="color: #aaa;">X-API-Key</code>?
+            <a href="https://app.leviatan-quant.com" style="color: #00ffcc; text-decoration: none; font-weight: bold; margin-left: 6px;">Conectar al Terminal 4D →</a>
+            <span style="margin: 0 10px; color: #333;">|</span>
+            <a href="https://billing.stripe.com/p/login/14AdR97fk58ZfhBdFN8N200" target="_blank" rel="noopener noreferrer" style="color: #aaa; text-decoration: none;">Gestionar suscripción / Bajas</a>
+        </p>
     </section>
+
+    <!-- Sección FAQ técnico y facturación -->
+    <section id="faq" class="faq-section">
+        <h2>Preguntas Frecuentes</h2>
+        <p class="faq-subtitle">Detalles operativos sobre cancelaciones, horarios de mercado y límites técnicos.</p>
+
+        <div class="faq-list">
+            <details class="faq-item">
+                <summary>¿Cómo puedo cancelar mi suscripción o descargar facturas?</summary>
+                <p>No existe permanencia. Puedes cancelar en cualquier momento, actualizar tu tarjeta o descargar tus facturas desde el <a href="https://billing.stripe.com/p/login/14AdR97fk58ZfhBdFN8N200" target="_blank" rel="noopener noreferrer">Portal de clientes de Stripe</a> introduciendo el email de compra. Al cancelar, mantendrás el acceso activo hasta el final del periodo mensual ya abonado y tu licencia se revocará automáticamente al vencimiento.</p>
+            </details>
+
+            <details class="faq-item">
+                <summary>¿Cuándo recibo mi clave X-API-Key tras realizar el pago?</summary>
+                <p>El aprovisionamiento es automático mediante webhook. En cuestión de segundos tras completarse el checkout en Stripe recibirás un correo desde <strong>access@leviatan-quant.com</strong> con tu <code>X-API-Key</code>, tu cuota activa y los snippets listos para conectar en Python o cURL.</p>
+            </details>
+
+            <details class="faq-item">
+                <summary>¿Qué devuelve la API fuera del horario regular de mercado (RTH)?</summary>
+                <p>El motor etiqueta cada lectura con el campo <code>session</code> (<code>RTH</code> durante la sesión regular de EE. UU. y <code>EXTENDED</code> en pre-market y after-hours). Durante fines de semana o festivos sin cotización activa, los endpoints en vivo pueden responder <code>503</code> mientras el endpoint histórico (<code>/api/v1/historical</code>) permanece disponible 24/7.</p>
+            </details>
+
+            <details class="faq-item">
+                <summary>¿Qué ocurre si supero el límite de peticiones por minuto?</summary>
+                <p>Las cuotas REST son de 60 req/min en Sandbox, 300 req/min en Pro y 600 req/min en Institucional. Si superas temporalmente tu ventana, la API responderá con código HTTP <code>429 Too Many Requests</code> sin bloquear tu cuenta. Para lectura continua sub-segundo sin polling, el plan Institucional incluye el stream push por WebSocket (<code>wss://api.leviatan-quant.com/ws/v1/stream</code>).</p>
+            </details>
+
+            <details class="faq-item">
+                <summary>¿Puedo usar mi clave en varios bots o redistribuir el feed?</summary>
+                <p>Puedes conectar tus propios scripts, servidores de backtesting o procesos internos dentro de las cuotas de tu plan. Queda prohibida la reventa, sublicencia o redistribución pública del feed de datos a terceros sin acuerdo comercial previo.</p>
+            </details>
+        </div>
+    </section>
+
+    <!-- Footer Institucional -->
+    <footer class="site-footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo">Leviatan<span>Quant</span></div>
+                <p>Infraestructura DaaS de telemetría cuantitativa y detección de regímenes mediante Filtros de Kalman 4D.</p>
+                <p style="margin-bottom: 0;">Soporte y facturación: <a href="mailto:access@leviatan-quant.com" style="color: #00ffcc; text-decoration: none;">access@leviatan-quant.com</a></p>
+            </div>
+
+            <div class="footer-col">
+                <h4>Plataforma</h4>
+                <ul>
+                    <li><a href="https://app.leviatan-quant.com">Terminal 4D en vivo</a></li>
+                    <li><a href="https://api.leviatan-quant.com/docs" target="_blank" rel="noopener noreferrer">Documentación API</a></li>
+                    <li><a href="#pricing">Planes y precios</a></li>
+                    <li><a href="#faq">Preguntas frecuentes</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Clientes</h4>
+                <ul>
+                    <li><a href="https://billing.stripe.com/p/login/14AdR97fk58ZfhBdFN8N200" target="_blank" rel="noopener noreferrer">Gestionar suscripción</a></li>
+                    <li><a href="https://billing.stripe.com/p/login/14AdR97fk58ZfhBdFN8N200" target="_blank" rel="noopener noreferrer">Facturas y bajas</a></li>
+                    <li><a href="mailto:access@leviatan-quant.com">Rotación de API Key</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="/terminos.html">Términos de Servicio</a></li>
+                    <li><a href="/privacidad.html">Política de Privacidad</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-disclaimer">
+            <strong>Aviso de riesgo financiero:</strong> Leviatan Quant suministra exclusivamente servicios tecnológicos de procesamiento matemático y telemetría estadística de mercado (Data-as-a-Service) con fines informativos, analíticos y de investigación cuantitativa. Ninguna métrica, señal de régimen, valor de Z-Score ni dato servido a través de la API o el Terminal 4D constituye asesoramiento financiero, recomendación de compra o venta, ni gestión de carteras. La operativa con instrumentos financieros conlleva un alto riesgo de pérdida de capital; las decisiones de inversión y ejecución algorítmica son responsabilidad exclusiva del usuario.
+        </div>
+
+        <div class="footer-bottom">
+            <span>© 2026 Leviatan Quant. Todos los derechos reservados.</span>
+            <span>Pagos procesados de forma segura por Stripe.</span>
+        </div>
+    </footer>
+
+    <!-- Script de Inicialización del Gráfico Dinámico -->
+    <script>
+        const chartContainer = document.getElementById('tv-chart');
+        const chartProperties = {
+            width: chartContainer.clientWidth || Math.max(280, window.innerWidth - 48),
+            height: chartContainer.clientHeight || 280,
+            layout: { background: { type: 'solid', color: '#1a1a1a' }, textColor: '#d1d4dc' },
+            grid: { vertLines: { color: '#2b2b2b' }, horzLines: { color: '#2b2b2b' } },
+            timeScale: { timeVisible: true, secondsVisible: true },
+        };
+        const chart = LightweightCharts.createChart(chartContainer, chartProperties);
+        const lineSeries = chart.addLineSeries({ color: '#00ffcc', lineWidth: 2 });
+
+        const resizeChart = () => {
+            const w = chartContainer.clientWidth;
+            const h = chartContainer.clientHeight || 280;
+            if (w > 0) {
+                chart.applyOptions({ width: w, height: h });
+            }
+        };
+
+        if (typeof ResizeObserver !== 'undefined') {
+            new ResizeObserver(resizeChart).observe(chartContainer);
+        }
+        window.addEventListener('resize', resizeChart);
+
+        let activeMarkers = [];
+        let lastTime = 0;
+        const API_URL = "https://api.leviatan-quant.com/api/v1/public/demo";
+        const badge = document.getElementById("status-badge");
+
+        async function fetchMarketData() {
+            try {
+                const response = await fetch(`${API_URL}?nocache=${Date.now()}`);
+
+                if (response.status === 429) {
+                    badge.innerText = "RATE LIMIT (60/MIN)";
+                    badge.style.background = "#555";
+                    badge.style.color = "white";
+                    return;
+                }
+
+                const rawResponse = await response.json();
+
+                if (response.status === 503 || (rawResponse.detail && rawResponse.detail.includes("Servicio no disponible"))) {
+                    badge.innerText = "MERCADO CERRADO";
+                    badge.style.background = "#555";
+                    badge.style.color = "white";
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                if (rawResponse.data && rawResponse.data.QQQ) {
+                    const qqqData = rawResponse.data.QQQ;
+                    const price = qqqData.precio;
+                    const regimen = qqqData.regimen;
+
+                    const offset = new Date().getTimezoneOffset() * 60;
+                    const currentTime = Math.floor(Date.now() / 1000) - offset;
+
+                    if (currentTime <= lastTime) return;
+                    lastTime = currentTime;
+
+                    lineSeries.update({ time: currentTime, value: price });
+                    badge.innerText = regimen;
+
+                    if (regimen.includes("IGNICIÓN") || regimen.includes("SHOCK POSITIVO")) {
+                        badge.style.background = "rgba(0,255,204,0.2)";
+                        badge.style.color = "#00ffcc";
+                        activeMarkers.push({ time: currentTime, position: 'belowBar', color: '#00ffcc', shape: 'arrowUp', text: 'ALCISTA' });
+                    } else if (regimen.includes("COLAPSO") || regimen.includes("SHOCK NEGATIVO")) {
+                        badge.style.background = "rgba(255,50,50,0.2)";
+                        badge.style.color = "#ff3333";
+                        activeMarkers.push({ time: currentTime, position: 'aboveBar', color: '#ff3333', shape: 'arrowDown', text: 'BAJISTA' });
+                    } else {
+                        badge.style.background = "#333";
+                        badge.style.color = "white";
+                    }
+
+                    if (activeMarkers.length > 5) activeMarkers.shift();
+                    lineSeries.setMarkers(activeMarkers);
+                }
+            } catch (error) {
+                console.error("Error en telemetría:", error);
+                badge.innerText = "DESCONECTADO";
+                badge.style.background = "#ff3333";
+                badge.style.color = "white";
+            }
+        }
+
+        fetchMarketData();
+        setInterval(fetchMarketData, 1500);
+    </script>
 </body>
 </html>
